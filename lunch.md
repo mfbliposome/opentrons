@@ -7,3 +7,4 @@ Add your name and your order to this list for the Thai lunch today
 * Connor: Mae Kong Fried Rice Lunch (With Chicken)
 * Avery: Nothing, thank you.
 * Christelle: Rice and Fish
+* Hansika: Mae Kong Noodle (with Chicken)
