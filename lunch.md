@@ -7,4 +7,5 @@ Add your name and your order to this list for the Thai lunch today
 * Connor: Mae Kong Fried Rice Lunch (With Chicken)
 * Avery: Nothing, thank you.
 * Maurer: Green Curry with tofu no fried veggie
+* Christelle: Rice and Fish
 
