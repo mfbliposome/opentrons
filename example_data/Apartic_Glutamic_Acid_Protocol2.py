@@ -28,25 +28,29 @@ def run(protocol: protocol_api.ProtocolContext):
 
 	MAX_ASP = 300 # maximum number of liquid capable of being aspirated
 
-	INSTRUCT_SHEET = pd.read_csv('./example_data/example.csv')
+	INSTRUCT_SHEET = pd.read_excel('opentron template test example.xlsx')
+	INSTRUCT_SHEET = INSTRUCT_SHEET.fillna(0)
 	INSTRUCT_SHEET = INSTRUCT_SHEET.sort_values('A1', ascending=False)
-	print(INSTRUCT_SHEET)
+# 	print(INSTRUCT_SHEET)
 
 	def distribute_decanol_using(INSTRUCT_SHEET):
-		p300.pick_up_tip()
-		
+		# SAFE_THRESHOLD=10
 		asp_volume = 10
 		# Iterates through every stock being used in the experiment
 		for STOCK in INSTRUCT_SHEET.columns:
 			if STOCK == "Well_Number": continue
-
+			p300.pick_up_tip()
 			# Iterates through every row in one stock solution
 			for row in range(len(INSTRUCT_SHEET)):
 				if asp_volume <= 10: p300.aspirate(INSTRUCT_SHEET[STOCK].iloc[row], plate[STOCK])
 				
 				p300.dispense(INSTRUCT_SHEET[STOCK].iloc[row], well1[INSTRUCT_SHEET["Well_Number"].iloc[row]])
 				asp_volume -= INSTRUCT_SHEET[STOCK].iloc[row]
+			p300.drop_tip()
 		p300.drop_tip()
+		
+	print(INSTRUCT_SHEET)
+	distribute_decanol_using(INSTRUCT_SHEET)
 
 
 # def run(protocol: protocol_api.ProtocolContext):
