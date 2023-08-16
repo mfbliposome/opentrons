@@ -20,10 +20,10 @@ metadata = {
 
 def run(protocol: protocol_api.ProtocolContext):
 	tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
-	plate = protocol.load_labware('corning_24_wellplate_3.4ml_flat', 5)
+	plate = protocol.load_labware('3dprt_50ml_2x3', 3)
 	#plate2 = protocol.load_labware('nest_96_wellplate_360ul_flat', 2)
 	well1 = protocol.load_labware('corning_96_wellplate_360ul_flat', 1)
-	well2 = protocol.load_labware('corning_96_wellplate_360ul_flat', 3)
+	#well2 = protocol.load_labware('corning_96_wellplate_360ul_flat', 3)
 	p300 = protocol.load_instrument('p300_single_gen2', 'right', tip_racks=[tiprack])
 
 	MAX_ASP = 300 # maximum number of liquid capable of being aspirated
@@ -35,19 +35,22 @@ def run(protocol: protocol_api.ProtocolContext):
 
 	def distribute_decanol_using(INSTRUCT_SHEET):
 		# SAFE_THRESHOLD=10
-		asp_volume = 10
+		asp_volume = 0
 		# Iterates through every stock being used in the experiment
 		for STOCK in INSTRUCT_SHEET.columns:
 			if STOCK == "Well_Number": continue
 			p300.pick_up_tip()
 			# Iterates through every row in one stock solution
 			for row in range(len(INSTRUCT_SHEET)):
-				if asp_volume <= 10: p300.aspirate(INSTRUCT_SHEET[STOCK].iloc[row], plate[STOCK])
+                assert(INSTRUCT_SHEET[STOCK].iloc[row]<=290)
+				if asp_volume <= INSTRUCT_SHEET[STOCK].iloc[row]+10:
+                    p300.aspirate(MAX_ASP, plate[STOCK])
+                    asp_volume = MAX_ASP
 				
 				p300.dispense(INSTRUCT_SHEET[STOCK].iloc[row], well1[INSTRUCT_SHEET["Well_Number"].iloc[row]])
 				asp_volume -= INSTRUCT_SHEET[STOCK].iloc[row]
 			p300.drop_tip()
-		p300.drop_tip()
+		
 		
 	print(INSTRUCT_SHEET)
 	distribute_decanol_using(INSTRUCT_SHEET)
