@@ -11,4 +11,4 @@ Add your name and your order to this list for the Thai lunch today
 * Christelle: Rice and Fish
 * Maurer: Green Curry with tofu no fried veggie
 * Christelle: Rice and Fish
-
+* Hansika: Mae Kong Noodle (with Chicken)
