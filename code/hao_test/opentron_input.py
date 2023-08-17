@@ -55,7 +55,7 @@ def run(protocol: protocol_api.ProtocolContext):
 		if STOCK == "Well_Number":
 			continue
 
-		p300.pick_up_tip()
+		# p300.pick_up_tip()
 		for index, row in CSV_DATA.iterrows():
 			volume = row[STOCK]  # Extract the volume for the current well
 			destination_well = row['Well_Number']  # Extract the destination well name
@@ -64,8 +64,8 @@ def run(protocol: protocol_api.ProtocolContext):
 				source_well = well1.wells_by_name()[STOCK]
 				destination_well = plate.wells_by_name()[destination_well]
 
-				p300.transfer(float(volume), source_well, destination_well, new_tip='never', touch_tip=True)
-		p300.drop_tip()
+				p300.transfer(float(volume), source_well, destination_well, new_tip='always', touch_tip=True)
+		# p300.drop_tip()
 
 
 # for source_well in CSV_DATA.columns:
