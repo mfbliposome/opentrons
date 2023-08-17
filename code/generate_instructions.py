@@ -33,6 +33,7 @@ def gen_inputfile(XLSX_FILENAME):
 
     
     input_file = (
+        f"# Upload this data/instructions file to the OpenTrons GUI"
         f"import pandas as pd\n"
         f"from io import StringIO\n"
         f"from opentrons import protocol_api\n\n"
