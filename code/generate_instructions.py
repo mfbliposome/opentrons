@@ -1,6 +1,6 @@
 import openpyxl
 
-XLSX_FILENAME ="./data/opentron template test example.xlsx"
+XLSX_FILENAME ="./data/NBD Plate Opentron.xlsx"
 
 METADATA = {
     'apiLevel': '2.13',
