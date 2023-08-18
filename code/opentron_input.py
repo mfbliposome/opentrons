@@ -4,7 +4,7 @@ from io import StringIO
 from opentrons import protocol_api
 
 data = '''
-Well,A1,A2,A3
+None,Reagent 1,Reagent 2,Reagent 3
 A1,10,None,None
 A2,10,None,None
 A3,10,None,None
@@ -41,7 +41,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
 	CSV_DATA = pd.read_csv(StringIO(data))
 	for STOCK in CSV_DATA.columns:
-		if STOCK == "Well": continue
+		if STOCK == "Well_number": continue
 		p300.pick_up_tip()
-		p300.distribute(CSV_DATA[STOCK], STOCK, CSV_DATA['Well'])
+		p300.distribute(list(CSV_DATA[STOCK]), STOCK, list(CSV_DATA['Well_number']))
 		p300.drop_tip()

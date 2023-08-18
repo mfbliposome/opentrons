@@ -12,9 +12,9 @@ METADATA = {
 INSTRUCTIONS = """
 \tCSV_DATA = pd.read_csv(StringIO(data))
 \tfor STOCK in CSV_DATA.columns:
-\t\tif STOCK == "Well": continue
+\t\tif STOCK == "Well_number": continue
 \t\tp300.pick_up_tip()
-\t\tp300.distribute(CSV_DATA[STOCK], STOCK, CSV_DATA['Well'])
+\t\tp300.distribute(list(CSV_DATA[STOCK]), STOCK, list(CSV_DATA['Well_number']))
 \t\tp300.drop_tip()
 """
 
@@ -33,7 +33,7 @@ def gen_inputfile(XLSX_FILENAME):
 
     
     input_file = (
-        f"# Upload this data/instructions file to the OpenTrons GUI"
+        f"# Upload this data/instructions file to the OpenTrons GUI\n"
         f"import pandas as pd\n"
         f"from io import StringIO\n"
         f"from opentrons import protocol_api\n\n"
