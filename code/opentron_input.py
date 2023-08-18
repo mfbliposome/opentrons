@@ -4,7 +4,7 @@ from io import StringIO
 from opentrons import protocol_api
 
 data = '''
-None,A1
+Well_number,A1
 A1,50
 A2,None
 A3,50
