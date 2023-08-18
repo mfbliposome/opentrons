@@ -42,8 +42,6 @@ def gen_inputfile(XLSX_FILENAME):
         f"metadata = {METADATA}\n\n"
         f"def run(protocol: protocol_api.ProtocolContext):\n"
         f"\ttiprack = protocol.load_labware('opentrons_96_tiprack_300ul', 8)\n"
-        f"\tplate = protocol.load_labware('3dprt_50ml_2x3', 3)\n"
-        f"\twell1 = protocol.load_labware('corning_96_wellplate_360ul_flat', 1)\n"
         f"\tp300 = protocol.load_instrument('p300_single_gen2', 'right', tip_racks=[tiprack])\n"
         f"{INSTRUCTIONS}"
     )

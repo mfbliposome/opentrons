@@ -4,7 +4,7 @@ from io import StringIO
 from opentrons import protocol_api
 
 data = '''
-Well_number,A1
+None,A1
 A1,50
 A2,None
 A3,50
@@ -107,8 +107,6 @@ metadata = {'apiLevel': '2.13', 'protocolName': 'Serial Dilution Tutorial', 'des
 
 def run(protocol: protocol_api.ProtocolContext):
 	tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', 8)
-	plate = protocol.load_labware('3dprt_50ml_2x3', 3)
-	well1 = protocol.load_labware('corning_96_wellplate_360ul_flat', 1)
 	p300 = protocol.load_instrument('p300_single_gen2', 'right', tip_racks=[tiprack])
 
 	CSV_DATA = pd.read_csv(StringIO(data))
