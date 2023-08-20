@@ -1,6 +1,40 @@
-import openpyxl
+import pandas as pd
 
-XLSX_FILENAME ="./data/NBD Plate Opentron.xlsx"
+XLSX_FILENAME ="./data/opentron template test example.xlsx"
+SHEET1 = "Sheet1"
+SHEET2 = "Sheet2"
+
+def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str):
+    """ 
+    This function takes an excel workbook and uses the data from the sheet names
+    to transform opentron instructions into a data string that can be read by the
+    opentron GUI
+    
+    returns: String containing comma separated instructions for moving a stock
+    volume to the reservior of interest
+    """
+
+    # Read in instruction data from Sheet 1 and replace empty cell values with a '0'
+    instructions = pd.read_excel(open(XLSX_FILENAME, 'rb'), sheet_name=SHEET1).fillna(0)
+    instructions.columns = instructions.columns.str.upper()
+
+    # Read in reagent data from Sheet 2
+    reagent_data = pd.read_excel(open(XLSX_FILENAME, 'rb'), sheet_name=SHEET2)
+    reagent_data.columns = reagent_data.columns.str.upper()
+    REAGENT, LOCATION = reagent_data.columns[0], reagent_data.columns[2]
+    reagent_data[LOCATION] = reagent_data[LOCATION].str.upper()
+
+    # Create a reagent-location dictionary
+    reagent_dict = dict(zip(reagent_data[REAGENT], reagent_data[LOCATION]))
+    instructions = instructions.rename(columns=reagent_dict)
+
+    # Build the data string object
+    data = ','.join(map(str, instructions.columns)) + '\n'
+    for index, row in instructions.iterrows():
+        row_string = ','.join(map(str, row))
+        data = data + row_string + "\n"
+    
+    return data
 
 METADATA = {
     'apiLevel': '2.13',
@@ -9,30 +43,16 @@ METADATA = {
     'author': 'New API User'
     }
 
-INSTRUCTIONS = """
-\tCSV_DATA = pd.read_csv(StringIO(data))
-\tfor STOCK in CSV_DATA.columns:
-\t\tif STOCK == "Well_number": continue
-\t\tp300.pick_up_tip()
-\t\tp300.distribute(list(CSV_DATA[STOCK]), STOCK, list(CSV_DATA['Well_number']))
-\t\tp300.drop_tip()
-"""
+INSTRUCTIONS = (
+    f"\tCSV_DATA = pd.read_csv(StringIO(data))\n"
+    f"\tfor STOCK in CSV_DATA.columns[1:]:\n"
+    f"\t\tp300.pick_up_tip()\n"
+    f"\t\tp300.distribute(list(CSV_DATA[STOCK]), STOCK, list(CSV_DATA['Well_number']))\n"
+    f"\t\tp300.drop_tip()\n"
+)
 
-def gen_inputfile(XLSX_FILENAME):
-    wb = openpyxl.load_workbook(XLSX_FILENAME)
-    ws = wb.active
-
-    data = ''
-    for row in ws.iter_rows(values_only=True):
-        if row == (None, None, None, None): break
-        
-        items = [str(i) for i in row]
-
-        new_list = (','.join(items))
-        data = data + new_list + "\n"
-
-    
-    input_file = (
+def protocol_generator(data, METADATA, INSTRUCTIONS):
+    return (
         f"# Upload this data/instructions file to the OpenTrons GUI\n"
         f"import pandas as pd\n"
         f"from io import StringIO\n"
@@ -46,7 +66,7 @@ def gen_inputfile(XLSX_FILENAME):
         f"{INSTRUCTIONS}"
     )
 
-    with open("./code/opentron_input.py", "w") as text_file:
-        text_file.write(input_file)
-
-gen_inputfile(XLSX_FILENAME)
+data = data_converter(XLSX_FILENAME, SHEET1, SHEET2)
+input_file = protocol_generator(data, METADATA, INSTRUCTIONS)
+with open("./code/opentron_input.py", "w") as text_file:
+    text_file.write(input_file)
