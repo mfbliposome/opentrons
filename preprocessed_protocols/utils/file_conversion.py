@@ -31,3 +31,26 @@ def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str):
         data = data + row_string + "\n"
     
     return data
+
+def input_file_generator(DATA:str, READ_FILE:str, WRITE_FILE:str, DATA_COMMENT:str = "DATA = \"\"\"\"\"\""):
+    """
+    This function takes a DATA String produced by the data_converter() and the file name for the
+    READ_FILE protocol of interest and creates a new input file WRITE_FILE, which can be read by
+    the opentron. The READ_FILE needs to have a DATA_COMMENT so that the DATA can be inserted.
+    """
+
+    if not READ_FILE.endswith(".py"): 
+        print("Read File needs to be a .py file")
+    elif not WRITE_FILE.endswith(".py"): 
+        print("Input file name must be a .py file")
+    else:
+        with open(WRITE_FILE, 'w') as input_file:
+            with open(READ_FILE, 'r') as reader:
+                for line in reader:
+                    if DATA_COMMENT in line:
+                        input_file.write(
+                            f"DATA = '''\n"
+                            f"{DATA}'''\n"
+                        )
+                    else:
+                        input_file.write(line)
