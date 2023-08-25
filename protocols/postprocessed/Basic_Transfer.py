@@ -11,7 +11,7 @@ metadata = {
 	This simple protocol tests the functionality of the distribute function:
 	https://docs.opentrons.com/v2/new_protocol_api.html#opentrons.protocol_api.InstrumentContext.distribute 
 	''',
-	'author': 'ewroginek & hliu56'
+	'author': 'ER & HL'
 	}
 
 DATA = '''
