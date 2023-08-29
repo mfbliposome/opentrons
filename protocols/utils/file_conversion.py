@@ -1,6 +1,6 @@
 import pandas as pd
 
-def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str):
+def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str, REAGENT_NAMES:int = 0, REAGENT_LOCATIONS:int = 2):
     """ 
     This function takes an excel workbook and uses the data from the sheet names
     to transform opentron instructions into a data string that can be read by the
@@ -17,7 +17,7 @@ def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str):
     # Read in reagent data from Sheet 2
     reagent_data = pd.read_excel(open(XLSX_FILENAME, 'rb'), sheet_name=SHEET2)
     reagent_data.columns = reagent_data.columns.str.upper()
-    REAGENT, LOCATION = reagent_data.columns[0], reagent_data.columns[2]
+    REAGENT, LOCATION = reagent_data.columns[REAGENT_NAMES], reagent_data.columns[REAGENT_LOCATIONS]
     reagent_data[LOCATION] = reagent_data[LOCATION].str.upper()
 
     # Create a reagent-location dictionary
