@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str, REAGENT_NAMES:int = 0, REAGENT_LOCATIONS:int = 2):
     """ 
@@ -18,6 +19,7 @@ def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str, REAGENT_NAMES:int 
     reagent_data = pd.read_excel(open(XLSX_FILENAME, 'rb'), sheet_name=SHEET2)
     reagent_data.columns = reagent_data.columns.str.upper()
     REAGENT, LOCATION = reagent_data.columns[REAGENT_NAMES], reagent_data.columns[REAGENT_LOCATIONS]
+    reagent_data[REAGENT] = reagent_data[REAGENT].str.upper()
     reagent_data[LOCATION] = reagent_data[LOCATION].str.upper()
 
     # Create a reagent-location dictionary
@@ -54,3 +56,19 @@ def input_file_generator(DATA:str, READ_FILE:str, WRITE_FILE:str, DATA_COMMENT:s
                         )
                     else:
                         input_file.write(line)
+
+def setup_postprocessed_file_for(dirname:str, PROTOCOL_FILE:str, DATA_FILE:str, SHEET1:str="Sheet1", SHEET2:str="Sheet2"):
+    # Excel Workbook Data Path
+    XLSX_FILENAME = os.path.join(dirname, f'data/{DATA_FILE}')
+
+    # Data String obtained from Excel Workbook
+    DATA = data_converter(XLSX_FILENAME, SHEET1, SHEET2)
+
+    # Path to file to be converted for opentron
+    READ_FILE = os.path.join(dirname, f'protocols/preprocessed/{PROTOCOL_FILE}')
+
+    # Destination file path for new opentron input file
+    WRITE_FILE = os.path.join(dirname, f"protocols/postprocessed/{PROTOCOL_FILE}")
+
+    # Convert READ_FILE to WRITE_FILE, creating a new input file for opentron in the destination folder (opentron_input_files)
+    input_file_generator(DATA, READ_FILE=READ_FILE, WRITE_FILE=WRITE_FILE)
