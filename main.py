@@ -1,12 +1,11 @@
 from protocols.utils.file_conversion import setup_postprocessed_file_for
 import os
 
-# Data Information
-DATA_FILE = "0. SAMPLE_DATA.xlsx"
-SHEET1, SHEET2 = "Sheet1", "Sheet2"
+# Input Data File and Protocol File from the user
+DATA_FILE = input("Enter the name of the data file (e.g., 0. SAMPLE_DATA.xlsx): ")
+PROTOCOL_FILE = input("Enter the name of the protocol file (e.g., Basic_Transfer.py): ")
 
-# Protocol File
-PROTOCOL_FILE = "Basic_Transfer.py"
+SHEET1, SHEET2 = "Sheet1", "Sheet2"
 
 # Combine Excel Workbook Data with Protocol File
 try:
