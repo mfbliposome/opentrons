@@ -1,4 +1,5 @@
 import pandas as pd
+import subprocess
 import os
 
 def select_file_from(data_files:list):
@@ -99,18 +100,34 @@ def input_file_generator(DATA:str, READ_FILE:str, WRITE_FILE:str, DATA_COMMENT:s
                     else:
                         input_file.write(line)
 
-def setup_postprocessed_file_for(dirname:str, PROTOCOL_FILE:str, DATA_FILE:str, SHEET1:str="Sheet1", SHEET2:str="Sheet2"):
-    # Excel Workbook Data Path
-    XLSX_FILENAME = os.path.join(dirname, f'data/{DATA_FILE}')
+def create_postprocessed_protocol(DIRNAME:str, PROTOCOL_FILE:str, DATA_FILE:str, SHEET1:str="Sheet1", SHEET2:str="Sheet2"):
+    try:
+        # Excel Workbook Data Path
+        XLSX_FILENAME = os.path.join(DIRNAME, f'data/{DATA_FILE}')
 
-    # Data String obtained from Excel Workbook
-    DATA = data_converter(XLSX_FILENAME, SHEET1, SHEET2)
+        # Data String obtained from Excel Workbook
+        DATA = data_converter(XLSX_FILENAME, SHEET1, SHEET2)
 
-    # Path to file to be converted for opentron
-    READ_FILE = os.path.join(dirname, f'protocols/preprocessed/{PROTOCOL_FILE}')
+        # Path to file to be converted for opentron
+        READ_FILE = os.path.join(DIRNAME, f'protocols/preprocessed/{PROTOCOL_FILE}')
 
-    # Destination file path for new opentron input file
-    WRITE_FILE = os.path.join(dirname, f"protocols/postprocessed/{PROTOCOL_FILE}")
+        # Destination file path for new opentron input file
+        WRITE_FILE = os.path.join(DIRNAME, f"protocols/postprocessed/{PROTOCOL_FILE}")
 
-    # Convert READ_FILE to WRITE_FILE, creating a new input file for opentron in the destination folder (opentron_input_files)
-    input_file_generator(DATA, READ_FILE=READ_FILE, WRITE_FILE=WRITE_FILE)
+        # Convert READ_FILE to WRITE_FILE, creating a new input file for opentron in the destination folder (opentron_input_files)
+        input_file_generator(DATA, READ_FILE=READ_FILE, WRITE_FILE=WRITE_FILE)
+
+        # Completed
+        print(f"Done! Upload './protocols/postprocessed/{PROTOCOL_FILE}' input file to OpenTron GUI")
+    except:
+        print("Data conversion failed :(")
+        print("Check filepaths and data organization")
+
+def run_simulator(PROTOCOL_FILE):
+    SIMULATOR = ''
+    while SIMULATOR != 'y' and SIMULATOR != 'n':
+        SIMULATOR = input("Run simulator [y/n]?")
+
+    if SIMULATOR == 'y': 
+        try: subprocess.run(f"opentrons_simulate ./protocols/postprocessed/{PROTOCOL_FILE}")
+        except: print("Failed to run simulator :(")
