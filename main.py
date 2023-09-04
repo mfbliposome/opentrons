@@ -6,9 +6,10 @@ DIRNAME = os.path.dirname(os.path.abspath(__file__))
 
 # Input Data File and Protocol File from the user
 DATA_FILE = get_file_from(DIRNAME, 'data', '(e.g., 0. SAMPLE_DATA.xlsx)')
-PROTOCOL_FILE = get_file_from(DIRNAME, 'protocols/postprocessed', '(e.g., Basic_Transfer.py)')
 SHEET1 = input("Sheet1 name: ")
 SHEET2 = input("Sheet2 name: ")
+
+PROTOCOL_FILE = get_file_from(DIRNAME, 'protocols/postprocessed', '(e.g., Basic_Transfer.py)')
 
 # Combine Excel Workbook Data with Protocol File
 create_postprocessed_protocol(DIRNAME, PROTOCOL_FILE, DATA_FILE, SHEET1, SHEET2)
