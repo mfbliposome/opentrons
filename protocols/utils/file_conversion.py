@@ -1,13 +1,55 @@
 import pandas as pd
 import os
 
+def select_file_from(data_files:list):
+    """
+    Accepts a list of file paths as a parameter, prompts the user to select a file from
+    a list by pressing a number, and returns a file name corresponding to the selected number
+    
+    Returns: String of file name
+    """
+    print("Files in the directory:")
+    for i, file_name in enumerate(data_files, start=1):
+        print(f"{i}. {file_name}")
+
+    # Prompt the user to select a file
+    while True:
+        try:
+            choice = int(input("Enter the number of the file you want to select: "))
+            if 1 <= choice <= len(data_files):
+                selected_file = data_files[choice - 1]
+                break
+            else:
+                print("Invalid choice. Please enter a valid number.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+
+    # Return the selected file
+    return selected_file
+
+def get_file_from(DIRNAME:str, FOLDER:str, EXAMPLE:str=''):
+    """
+    Retrieve a file name using a command-line-interface (CLI) for a user
+    """
+    SELECT_FILE = ''
+    while SELECT_FILE != 'y' and SELECT_FILE != 'n':
+        SELECT_FILE = input(f"Select data from './{FOLDER}'? [y,n]")
+
+    if SELECT_FILE == 'y':
+        files = os.listdir(f'{DIRNAME}/{FOLDER}')
+        FILENAME = select_file_from(files)
+    else:
+        FILENAME = input(f"Enter the name of the file {EXAMPLE}: ")
+    
+    return FILENAME
+
 def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str, REAGENT_NAMES:int = 0, REAGENT_LOCATIONS:int = 2):
     """ 
     This function takes an excel workbook and uses the data from the sheet names
     to transform opentron instructions into a data string that can be read by the
     opentron GUI
     
-    returns: String containing comma separated instructions for moving a stock
+    Returns: String containing comma separated instructions for moving a stock
     volume to the reservior of interest
     """
 
