@@ -37,7 +37,7 @@ def get_file_from(DIRNAME:str, FOLDER:str, EXAMPLE:str=''):
         SELECT_FILE = input(f"Select data from './{FOLDER}'? [y,n]")
 
     if SELECT_FILE == 'y':
-        files = os.listdir(f'{DIRNAME}/{FOLDER}')
+        files = [i for i in os.listdir(f'{DIRNAME}/{FOLDER}') if i.endswith('.xlsx') or i.endswith('.py')]
         FILENAME = select_file_from(files)
     else:
         FILENAME = input(f"Enter the name of the file {EXAMPLE}: ")
@@ -107,13 +107,13 @@ def create_postprocessed_protocol(DIRNAME:str, PROTOCOL_FILE:str, DATA_FILE:str,
 
         # Data String obtained from Excel Workbook
         DATA = data_converter(XLSX_FILENAME, SHEET1, SHEET2)
-
+        
         # Path to file to be converted for opentron
         READ_FILE = os.path.join(DIRNAME, f'protocols/preprocessed/{PROTOCOL_FILE}')
-
+        
         # Destination file path for new opentron input file
         WRITE_FILE = os.path.join(DIRNAME, f"protocols/postprocessed/{PROTOCOL_FILE}")
-
+        
         # Convert READ_FILE to WRITE_FILE, creating a new input file for opentron in the destination folder (opentron_input_files)
         input_file_generator(DATA, READ_FILE=READ_FILE, WRITE_FILE=WRITE_FILE)
 
@@ -129,5 +129,8 @@ def run_simulator(PROTOCOL_FILE):
         SIMULATOR = input("Run simulator [y/n]?")
 
     if SIMULATOR == 'y': 
-        try: subprocess.run(f"opentrons_simulate ./protocols/postprocessed/{PROTOCOL_FILE}")
-        except: print("Failed to run simulator :(")
+        try: 
+            subprocess.run(f"opentrons_simulate ./protocols/postprocessed/{PROTOCOL_FILE}")
+            print("Simulation complete!")
+        except: 
+            print("Failed to run simulator :(")
