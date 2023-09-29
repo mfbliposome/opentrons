@@ -1,12 +1,11 @@
 # Upload this data/instructions file via the OpenTrons GUI\n"
-import os
 import pandas as pd
 from io import StringIO
 from opentrons import protocol_api
 
 metadata = {
 	'apiLevel': '2.13',
-	'protocolName': os.path.basename(__file__),
+	'protocolName': 'Basic_Transfer', # protocolName should be same name as current file
 	'description': '''
 	This simple protocol tests the functionality of the distribute function:
 	https://docs.opentrons.com/v2/new_protocol_api.html#opentrons.protocol_api.InstrumentContext.distribute 
@@ -26,9 +25,10 @@ def run(protocol: protocol_api.ProtocolContext):
 	for STOCK in EXCEL_DATA.columns[1:]:
 		for index, row in EXCEL_DATA.iterrows():
 			volume = row[STOCK]  # Extract the volume for the current well
-			destination_well = EXCEL_DATA.iloc[:, 0]  # Extract the destination well name
+			destination_wells = list(EXCEL_DATA.iloc[:, 0])  # Extract the destination well name
 
 			if pd.notnull(volume) and volume != 0:  # Check if the volume is not None or zero
 				source_well = reservoir.wells_by_name()[STOCK]
-				destination_well = plate.wells_by_name()[destination_well]
-				p300.transfer(float(volume), source_well, destination_well, new_tip='always', touch_tip=True)
+				for WELL in destination_wells:
+					destination_well = plate.wells_by_name()[WELL]
+					p300.transfer(float(volume), source_well, destination_well, new_tip='always', touch_tip=True)

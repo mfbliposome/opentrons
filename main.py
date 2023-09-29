@@ -1,19 +1,18 @@
-from protocols.utils.file_conversion import setup_postprocessed_file_for
 import os
+from protocols.utils.file_conversion import get_file_from, run_simulator, create_postprocessed_protocol
 
-# Data Information
-DATA_FILE = "0. SAMPLE_DATA.xlsx"
-SHEET1, SHEET2 = "Sheet1", "Sheet2"
+# Get current working directory
+DIRNAME = os.path.dirname(os.path.abspath(__file__))
 
-# Protocol File
-PROTOCOL_FILE = "Basic_Transfer.py"
+# Input Data File and Protocol File from the user
+DATA_FILE = get_file_from(DIRNAME, 'data', '(e.g., 0. SAMPLE_DATA.xlsx)')
+SHEET1 = input("Sheet1 name: ")
+SHEET2 = input("Sheet2 name: ")
+
+PROTOCOL_FILE = get_file_from(DIRNAME, 'protocols/preprocessed', '(e.g., Basic_Transfer.py)')
 
 # Combine Excel Workbook Data with Protocol File
-try:
-    dirname = os.path.dirname(__file__)
-    setup_postprocessed_file_for(dirname, PROTOCOL_FILE, DATA_FILE)
+create_postprocessed_protocol(DIRNAME, PROTOCOL_FILE, DATA_FILE, SHEET1, SHEET2)
 
-    print(f"Done! Upload './protocols/postprocessed/{PROTOCOL_FILE}' input file to OpenTron GUI")
-except:
-    print("Data conversion failed :(")
-    print("Check filepaths and data organization")
+# Test the new protocol file by running the simulator
+run_simulator(PROTOCOL_FILE)

@@ -1,5 +1,48 @@
 import pandas as pd
+import subprocess
 import os
+
+def select_file_from(data_files:list):
+    """
+    Accepts a list of file paths as a parameter, prompts the user to select a file from
+    a list by pressing a number, and returns a file name corresponding to the selected number
+    
+    Returns: String of file name
+    """
+    print("Files in the directory:")
+    for i, file_name in enumerate(data_files, start=1):
+        print(f"{i}. {file_name}")
+
+    # Prompt the user to select a file
+    while True:
+        try:
+            choice = int(input("Enter the number of the file you want to select: "))
+            if 1 <= choice <= len(data_files):
+                selected_file = data_files[choice - 1]
+                break
+            else:
+                print("Invalid choice. Please enter a valid number.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+
+    # Return the selected file
+    return selected_file
+
+def get_file_from(DIRNAME:str, FOLDER:str, EXAMPLE:str=''):
+    """
+    Retrieve a file name using a command-line-interface (CLI) for a user
+    """
+    SELECT_FILE = ''
+    while SELECT_FILE != 'y' and SELECT_FILE != 'n':
+        SELECT_FILE = input(f"Select data from './{FOLDER}'? [y,n]")
+
+    if SELECT_FILE == 'y':
+        files = [i for i in os.listdir(f'{DIRNAME}/{FOLDER}') if i.endswith('.xlsx') or i.endswith('.py')]
+        FILENAME = select_file_from(files)
+    else:
+        FILENAME = input(f"Enter the name of the file {EXAMPLE}: ")
+    
+    return FILENAME
 
 def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str, REAGENT_NAMES:int = 0, REAGENT_LOCATIONS:int = 2):
     """ 
@@ -7,7 +50,7 @@ def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str, REAGENT_NAMES:int 
     to transform opentron instructions into a data string that can be read by the
     opentron GUI
     
-    returns: String containing comma separated instructions for moving a stock
+    Returns: String containing comma separated instructions for moving a stock
     volume to the reservior of interest
     """
 
@@ -57,18 +100,37 @@ def input_file_generator(DATA:str, READ_FILE:str, WRITE_FILE:str, DATA_COMMENT:s
                     else:
                         input_file.write(line)
 
-def setup_postprocessed_file_for(dirname:str, PROTOCOL_FILE:str, DATA_FILE:str, SHEET1:str="Sheet1", SHEET2:str="Sheet2"):
-    # Excel Workbook Data Path
-    XLSX_FILENAME = os.path.join(dirname, f'data/{DATA_FILE}')
+def create_postprocessed_protocol(DIRNAME:str, PROTOCOL_FILE:str, DATA_FILE:str, SHEET1:str="Sheet1", SHEET2:str="Sheet2"):
+    try:
+        # Excel Workbook Data Path
+        XLSX_FILENAME = os.path.join(DIRNAME, f'data/{DATA_FILE}')
 
-    # Data String obtained from Excel Workbook
-    DATA = data_converter(XLSX_FILENAME, SHEET1, SHEET2)
+        # Data String obtained from Excel Workbook
+        DATA = data_converter(XLSX_FILENAME, SHEET1, SHEET2)
+        
+        # Path to file to be converted for opentron
+        READ_FILE = os.path.join(DIRNAME, f'protocols/preprocessed/{PROTOCOL_FILE}')
+        
+        # Destination file path for new opentron input file
+        WRITE_FILE = os.path.join(DIRNAME, f"protocols/postprocessed/{PROTOCOL_FILE}")
+        
+        # Convert READ_FILE to WRITE_FILE, creating a new input file for opentron in the destination folder (opentron_input_files)
+        input_file_generator(DATA, READ_FILE=READ_FILE, WRITE_FILE=WRITE_FILE)
 
-    # Path to file to be converted for opentron
-    READ_FILE = os.path.join(dirname, f'protocols/preprocessed/{PROTOCOL_FILE}')
+        # Completed
+        print(f"Done! Upload './protocols/postprocessed/{PROTOCOL_FILE}' input file to OpenTron GUI")
+    except:
+        print("Data conversion failed :(")
+        print("Check filepaths and data organization")
 
-    # Destination file path for new opentron input file
-    WRITE_FILE = os.path.join(dirname, f"protocols/postprocessed/{PROTOCOL_FILE}")
+def run_simulator(PROTOCOL_FILE):
+    SIMULATOR = ''
+    while SIMULATOR != 'y' and SIMULATOR != 'n':
+        SIMULATOR = input("Run simulator [y/n]?")
 
-    # Convert READ_FILE to WRITE_FILE, creating a new input file for opentron in the destination folder (opentron_input_files)
-    input_file_generator(DATA, READ_FILE=READ_FILE, WRITE_FILE=WRITE_FILE)
+    if SIMULATOR == 'y': 
+        try: 
+            subprocess.run(f"opentrons_simulate ./protocols/postprocessed/{PROTOCOL_FILE}")
+            print("Simulation complete!")
+        except: 
+            print("Failed to run simulator :(")
