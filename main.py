@@ -5,9 +5,9 @@ from protocols.utils.file_conversion import get_file_from, run_simulator, create
 DIRNAME = os.path.dirname(os.path.abspath(__file__))
 
 # Input Data File and Protocol File from the user
-DATA_FILE = get_file_from(DIRNAME, 'data', '(e.g., 0. SAMPLE_DATA.xlsx)')
-SHEET1 = input("Sheet1 name: ")
-SHEET2 = input("Sheet2 name: ")
+DATA_FILE = get_file_from(DIRNAME, 'data', '(e.g., 2023.09.29_DispenseVolume.xlsx)')
+SHEET1 = input("Dispense_Volumes: ")
+SHEET2 = input("Stock_solutions: ")
 
 PROTOCOL_FILE = get_file_from(DIRNAME, 'protocols/preprocessed', '(e.g., Basic_Transfer.py)')
 
