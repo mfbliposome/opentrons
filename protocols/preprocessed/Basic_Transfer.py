@@ -17,10 +17,10 @@ metadata = {
 DATA = """""" # This String will be populated in 'opentron_input_files' after running 'main.py' (do not change!)
 
 def run(protocol: protocol_api.ProtocolContext):
-	tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', 1)
-	reservoir = protocol.load_labware('opentrons_6_tuberack_falcon_50ml_conical', 2)
-	plate = protocol.load_labware('nest_96_wellplate_200ul_flat', 3)
-	p300 = protocol.load_instrument('p300_single_gen2', 'right', tip_racks=[tiprack])
+	tiprack = protocol.load_labware('opentrons_96_tiprack_20ul', 8)
+	reservoir = protocol.load_labware('corning_24_wellplate_3.4ml_flat', 4)
+	plate = protocol.load_labware('corning_96_wellplate_360ul_flat', 2)
+	p20 = protocol.load_instrument('p20_single_gen2', 'left', tip_racks=[tiprack])
 	
 	EXCEL_DATA = pd.read_csv(StringIO(DATA))
 	for STOCK in EXCEL_DATA.columns[1:]:
