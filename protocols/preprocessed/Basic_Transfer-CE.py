@@ -5,12 +5,12 @@ from opentrons import protocol_api
 
 metadata = {
 	'apiLevel': '2.13',
-	'protocolName': 'Basic_Transfer', # protocolName should be same name as current file
+	'protocolName': 'CE_Basic_Transfer', # protocolName should be same name as current file
 	'description': '''
 	This simple protocol tests the functionality of the distribute function:
 	https://docs.opentrons.com/v2/new_protocol_api.html#opentrons.protocol_api.InstrumentContext.distribute 
 	''',
-	'author': 'ER & HL'
+	'author': 'CE'
 	}
 
 DATA = """""" # This String will be populated in 'opentron_input_files' after running 'main.py' (do not change!)
@@ -31,4 +31,4 @@ def run(protocol: protocol_api.ProtocolContext):
 				source_well = reservoir.wells_by_name()[STOCK]
 				for WELL in destination_wells:
 					destination_well = plate.wells_by_name()[WELL]
-					p300.transfer(float(volume), source_well, destination_well, new_tip='always', touch_tip=True)
+					p20.transfer(float(volume), source_well, destination_well, new_tip='always', touch_tip=True)

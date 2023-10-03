@@ -6,8 +6,8 @@ DIRNAME = os.path.dirname(os.path.abspath(__file__))
 
 # Input Data File and Protocol File from the user
 DATA_FILE = get_file_from(DIRNAME, 'data', '(e.g., 2023.09.29_DispenseVolume.xlsx)')
-SHEET1 = input("Dispense_Volumes: ")
-SHEET2 = input("Stock_solutions: ")
+SHEET1 = input("Name of Sheet1: ")
+SHEET2 = input("Name of Sheet2: ")
 
 PROTOCOL_FILE = get_file_from(DIRNAME, 'protocols/preprocessed', '(e.g., Basic_Transfer.py)')
 

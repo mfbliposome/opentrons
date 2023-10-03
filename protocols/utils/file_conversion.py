@@ -112,6 +112,7 @@ def create_postprocessed_protocol(DIRNAME:str, PROTOCOL_FILE:str, DATA_FILE:str,
         READ_FILE = os.path.join(DIRNAME, f'protocols/preprocessed/{PROTOCOL_FILE}')
         
         # Destination file path for new opentron input file
+        if not os.path.exists(os.path.join(DIRNAME, f"protocols/postprocessed")): os.mkdir(os.path.join(DIRNAME, f"protocols/postprocessed"))
         WRITE_FILE = os.path.join(DIRNAME, f"protocols/postprocessed/{PROTOCOL_FILE}")
         
         # Convert READ_FILE to WRITE_FILE, creating a new input file for opentron in the destination folder (opentron_input_files)
