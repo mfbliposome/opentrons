@@ -13,6 +13,7 @@ def select_file_from(data_files:list):
     for i, file_name in enumerate(data_files, start=1):
         print(f"{i}. {file_name}")
 
+
     # Prompt the user to select a file
     while True:
         try:
@@ -32,12 +33,15 @@ def get_file_from(DIRNAME:str, FOLDER:str, EXAMPLE:str=''):
     """
     Retrieve a file name using a command-line-interface (CLI) for a user
     """
+    files = [i for i in os.listdir(f'{DIRNAME}/{FOLDER}') if i.endswith('.xlsx') or i.endswith('.py')]
+    if len(files) == 1:
+        return files[0]
+
     SELECT_FILE = ''
     while SELECT_FILE != 'y' and SELECT_FILE != 'n':
         SELECT_FILE = input(f"Select data from './{FOLDER}'? [y,n]")
 
     if SELECT_FILE == 'y':
-        files = [i for i in os.listdir(f'{DIRNAME}/{FOLDER}') if i.endswith('.xlsx') or i.endswith('.py')]
         FILENAME = select_file_from(files)
     else:
         FILENAME = input(f"Enter the name of the file {EXAMPLE}: ")

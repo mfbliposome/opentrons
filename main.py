@@ -7,6 +7,7 @@ DIRNAME = os.path.dirname(os.path.abspath(__file__))
 # Input Data File and Protocol File from the user
 DATA_FILE = get_file_from(DIRNAME, 'data', '(e.g., 2023.09.29_DispenseVolume.xlsx)')
 
+# OT-2 Protocol File of interest
 PROTOCOL_FILE = get_file_from(DIRNAME, 'protocols/preprocessed', '(e.g., Basic_Transfer.py)')
 
 # Combine Excel Workbook Data with Protocol File
