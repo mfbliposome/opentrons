@@ -44,7 +44,7 @@ def get_file_from(DIRNAME:str, FOLDER:str, EXAMPLE:str=''):
     
     return FILENAME
 
-def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str, REAGENT_NAMES:int = 0, REAGENT_LOCATIONS:int = 2):
+def data_converter(XLSX_FILENAME:str, REAGENT_NAMES:int = 0, REAGENT_LOCATIONS:int = 2):
     """ 
     This function takes an excel workbook and uses the data from the sheet names
     to transform opentron instructions into a data string that can be read by the
@@ -55,11 +55,16 @@ def data_converter(XLSX_FILENAME:str, SHEET1:str, SHEET2:str, REAGENT_NAMES:int 
     """
 
     # Read in instruction data from Sheet 1 and replace empty cell values with a '0'
-    instructions = pd.read_excel(open(XLSX_FILENAME, 'rb'), sheet_name=SHEET1).fillna(0)
-    instructions.columns = instructions.columns.str.upper()
+    print(f"in data_converter() {XLSX_FILENAME}")
+    data = pd.read_excel(XLSX_FILENAME, None)
+    sheet_name = list(data.keys())
 
-    # Read in reagent data from Sheet 2
-    reagent_data = pd.read_excel(open(XLSX_FILENAME, 'rb'), sheet_name=SHEET2)
+    # Read in instructions and reagent data from the first two sheets
+    instructions = data[sheet_name[0]].fillna(0)
+    reagent_data = data[sheet_name[1]].fillna(0)
+
+    # Obtain Column information of interest and standardize strings
+    instructions.columns = instructions.columns.str.upper()
     reagent_data.columns = reagent_data.columns.str.upper()
     REAGENT, LOCATION = reagent_data.columns[REAGENT_NAMES], reagent_data.columns[REAGENT_LOCATIONS]
     reagent_data[REAGENT] = reagent_data[REAGENT].str.upper()
@@ -100,13 +105,13 @@ def input_file_generator(DATA:str, READ_FILE:str, WRITE_FILE:str, DATA_COMMENT:s
                     else:
                         input_file.write(line)
 
-def create_postprocessed_protocol(DIRNAME:str, PROTOCOL_FILE:str, DATA_FILE:str, SHEET1:str="Sheet1", SHEET2:str="Sheet2"):
+def create_postprocessed_protocol(DIRNAME:str, PROTOCOL_FILE:str, DATA_FILE:str):
     try:
         # Excel Workbook Data Path
         XLSX_FILENAME = os.path.join(DIRNAME, f'data/{DATA_FILE}')
 
         # Data String obtained from Excel Workbook
-        DATA = data_converter(XLSX_FILENAME, SHEET1, SHEET2)
+        DATA = data_converter(XLSX_FILENAME)
         
         # Path to file to be converted for opentron
         READ_FILE = os.path.join(DIRNAME, f'protocols/preprocessed/{PROTOCOL_FILE}')
