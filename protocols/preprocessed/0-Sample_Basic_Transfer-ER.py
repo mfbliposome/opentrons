@@ -28,7 +28,9 @@ def run(protocol: protocol_api.ProtocolContext):
 			destination_wells = list(EXCEL_DATA.iloc[:, 0])  # Extract the destination well name
 
 			if pd.notnull(volume) and volume != 0:  # Check if the volume is not None or zero
+				p300.pick_up_tip()
 				source_well = reservoir.wells_by_name()[STOCK]
 				for WELL in destination_wells:
 					destination_well = plate.wells_by_name()[WELL]
-					p300.transfer(float(volume), source_well, destination_well, new_tip='always', touch_tip=True)
+					p300.transfer(float(volume), source_well, destination_well.bottom(3), new_tip='never', touch_tip=True, blow_out=True)
+				p300.drop_tip()
