@@ -6,6 +6,7 @@ Repo for programming the automated liquid handler [OpenTrons](https://docs.opent
 The OT-2 robot requires a Python input file to carry out experiments. Given a `.xlsx` tabular data file (in `./data/`) and a `.py` instruction sheet (in `./protocols/preprocessed`), `main.py` will convert your data to a `String` and write a new `.py` file. This Python file is set to output in `./protocols/postprocessed` and contains both your original instruction logic and data. Upload this file to the OpenTrons GUI to have the OT-2 robot carry out your experiment. Consider this example workflow:
 
 1. `Clone` this repository to your computer in a directory of interest
+1. Run `pip install -r requirements.txt` 
 1. Create a **Data** file for your experiment, located in `/data/`
 1. Create an intruction **Protocol** for the OT-2 robot, located in `/protocol/preprocessed/`
 1. Open a command-line terminal and run the command `python main.py` and follow the input prompts. The **Simulator** output reflects the behavior OT-2 when following your protocol
