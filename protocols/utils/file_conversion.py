@@ -129,9 +129,9 @@ def create_postprocessed_protocol(DIRNAME:str, PROTOCOL_FILE:str, DATA_FILE:str)
 
         # Completed
         print(f"Done! Upload './protocols/postprocessed/{PROTOCOL_FILE}' input file to OpenTron GUI")
-    except:
+    except Exception as error:
         print("Data conversion failed :(")
-        print("Check filepaths and data organization")
+        print(f"{type(error).__name__}: {error}")
 
 def run_simulator(PROTOCOL_FILE):
     SIMULATOR = ''
@@ -142,5 +142,6 @@ def run_simulator(PROTOCOL_FILE):
         try: 
             subprocess.run(f"opentrons_simulate ./protocols/postprocessed/{PROTOCOL_FILE}")
             print("Simulation complete!")
-        except: 
+        except Exception as error: 
             print("Failed to run simulator :(")
+            print(f"{type(error).__name__}: {error}")
