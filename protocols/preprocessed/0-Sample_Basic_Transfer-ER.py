@@ -32,5 +32,5 @@ def run(protocol: protocol_api.ProtocolContext):
 				source_well = reservoir.wells_by_name()[STOCK]
 				for WELL in destination_wells:
 					destination_well = plate.wells_by_name()[WELL]
-					p300.transfer(float(volume), source_well, destination_well.bottom(3), new_tip='never', touch_tip=True, blow_out=True)
+					p300.transfer(float(volume), source_well, destination_well.bottom(5), new_tip='never', touch_tip=True)
 				p300.drop_tip()
