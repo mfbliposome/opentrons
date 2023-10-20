@@ -13,7 +13,7 @@ metadata = {
 	'author': 'CE'
 	}
 
-DATA = """""" # This String will be populated in 'opentron_input_files' after running 'main.py' (do not change!)
+INSTRUCTIONS = """""" # This String will be populated in 'opentron_input_files' after running 'main.py' (do not change!)
 
 def run(protocol: protocol_api.ProtocolContext):
 	tiprack = protocol.load_labware('opentrons_96_tiprack_20ul', 8)
@@ -21,7 +21,7 @@ def run(protocol: protocol_api.ProtocolContext):
 	plate = protocol.load_labware('corning_96_wellplate_360ul_flat', 2)
 	p20 = protocol.load_instrument('p20_single_gen2', 'left', tip_racks=[tiprack])
 	
-	EXCEL_DATA = pd.read_csv(StringIO(DATA))
+	EXCEL_DATA = pd.read_csv(StringIO(INSTRUCTIONS))
 	for STOCK in EXCEL_DATA.columns[1:]:
 		p20.pick_up_tip()
 		for index, row in EXCEL_DATA.iterrows():

@@ -86,7 +86,7 @@ def data_converter(XLSX_FILENAME:str, REAGENT_NAMES:int = 0, REAGENT_LOCATIONS:i
     
     return data
 
-def input_file_generator(DATA:str, READ_FILE:str, WRITE_FILE:str, DATA_COMMENT:str = "DATA = \"\"\"\"\"\""):
+def input_file_generator(DATA:str, READ_FILE:str, WRITE_FILE:str, DATA_COMMENT:str = "INSTRUCTIONS = \"\"\"\"\"\""):
     """
     This function takes a DATA String produced by the data_converter() and the file name for the
     READ_FILE protocol of interest and creates a new input file WRITE_FILE, which can be read by
@@ -103,7 +103,7 @@ def input_file_generator(DATA:str, READ_FILE:str, WRITE_FILE:str, DATA_COMMENT:s
                 for line in reader:
                     if DATA_COMMENT in line:
                         input_file.write(
-                            f"DATA = '''\n"
+                            f"INSTRUCTIONS = '''\n"
                             f"{DATA}'''\n"
                         )
                     else:
