@@ -24,14 +24,6 @@ def run(protocol: protocol_api.ProtocolContext):
 	DECK_SLOTS = list(INSTRUCT[INSTRUCT.columns[0]]) # The first column has deck slot that indicate where the destination plates are located in the OT-2  
 	DESTINATIONS = list(INSTRUCT[INSTRUCT.columns[1]])
 	SOLUTIONS = INSTRUCT.columns[2:]
-	
-    # Load plate and pipette labware from workbook
-	# PLATES = pd.read_csv(StringIO(LABWARE))
-	
-	# labware_dictionary = PLATES['ROLE'].value_counts().to_dict()
-	# destination_wells = []
-	# stock_solutions = []
-	# tip_racks = []
 
 	# Load labware for the experiment
 	tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', 11)
