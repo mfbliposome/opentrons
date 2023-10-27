@@ -27,7 +27,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
 	# Load labware for the experiment
 	tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', 11)
-	reservoir = protocol.load_labware('opentrons_15_tuberack_falcon_15ml_conical', 10)
+	reservoir = protocol.load_labware('opentrons_24_tuberack_eppendorf_2ml_safelock_snapcap', 10)
 	plate1 = protocol.load_labware('nest_96_wellplate_200ul_flat', 1)
 	plate2 = protocol.load_labware('nest_96_wellplate_200ul_flat', 2)
 	
