@@ -21,9 +21,8 @@ PIPETTE = """"""
 def run(protocol: protocol_api.ProtocolContext):
 	# Load instructions from excel workbook
 	INSTRUCT = pd.read_csv(StringIO(INSTRUCTIONS))
-	DECK_SLOTS = list(INSTRUCT[INSTRUCT.columns[0]]) # The first column has deck slot that indicate where the destination plates are located in the OT-2  
-	DESTINATIONS = list(INSTRUCT[INSTRUCT.columns[1]])
-	SOLUTIONS = INSTRUCT.columns[2:]
+	DECK_SLOTS = INSTRUCT[INSTRUCT.columns[0]] # The first column has deck slot that indicate where the destination plates are located in the OT-2  
+	slots = DECK_SLOTS.unique() # Get the slots numbers being used
 
 	# Load labware for the experiment
 	tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', 11)
@@ -37,14 +36,15 @@ def run(protocol: protocol_api.ProtocolContext):
 	PIPETTE_API_NAME = PIPETTE_TYPE[PIPETTE_TYPE.columns[1]][0]
 	p = protocol.load_instrument(PIPETTE_API_NAME, PIPETTE_LOCATION, tip_racks=[tiprack])
 
-	# Distribute the stock solutions to their destination wells
-	for STOCK_LOCATION in SOLUTIONS:
-		STOCK_VOLUMES = list(INSTRUCT[STOCK_LOCATION])
-		DW1 = [plate1[WELL].bottom(5) for WELL in DESTINATIONS]
-		p.distribute(STOCK_VOLUMES, reservoir[STOCK_LOCATION], DW1)
-		
-    	# Distribute the stock solutions to their destination wells
-	for STOCK_LOCATION in SOLUTIONS:
-		STOCK_VOLUMES = list(INSTRUCT[STOCK_LOCATION])
-		DW2 = [plate2[WELL].bottom(5) for WELL in DESTINATIONS]
-		p.distribute(STOCK_VOLUMES, reservoir[STOCK_LOCATION], DW2)
+	plate = [plate1, plate2]
+	for i in range(len(slots)):
+		# Filter instruction table for plate number of interest
+		INST = INSTRUCT[INSTRUCT[INSTRUCT.columns[0]] == slots[i]]
+		DESTINATIONS = list(INST[INST.columns[1]])
+		SOLUTIONS = INST.columns[2:]
+
+		# Distribute stock solution to the corresponding plate well numbers
+		for STOCK_LOCATION in SOLUTIONS:
+			STOCK_VOLUMES = list(INST[STOCK_LOCATION])
+			DW = [plate[i][WELL].bottom(5) for WELL in DESTINATIONS]
+			p.distribute(STOCK_VOLUMES, reservoir[STOCK_LOCATION], DW)
