@@ -7,8 +7,7 @@ metadata = {
 	'apiLevel': '2.13',
 	'protocolName': 'Aphiphile_Dispensation', # protocolName should be same name as current file
 	'description': '''
-	This simple protocol tests the functionality of the distribute function:
-	https://docs.opentrons.com/v2/new_protocol_api.html#opentrons.protocol_api.InstrumentContext.distribute 
+	This simple protocol transfers one stock solution to a series of destination wells for each stock solution in an excel workbook 
 	''',
 	'author': 'ER'
 	}
