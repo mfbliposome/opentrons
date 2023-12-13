@@ -29,11 +29,11 @@ Make sure this line of code is included when creating new `.py` files. Only use 
 The `./protocols/utils/file_conversion.py` functions assume that the `.xlsx` data file contains four sheets. `Sheet1` contains information pertaining to the deck slot, reagents, destination, and volume number of reagent to be transfered. The first column should contain `int` values for the deck slot location of the destination plate of interest. The second column should contain `String` locations for the destination wells and each following column should contain `float` volumes for each reagent to be transfered. For example:
 
 | Deck Slot | Well | Reagent1 | Reagent2 | ... |
-|----------:|------|-----------|-----------| ... |
-|----------1|     A1|     40|     20| ... |
-|----------1|     A2|     20|     50| ... |
-|----------2|     A1|     60|     10| ... |
-|----------2|    ...|    ...|    ...| ... |
+|----------|------|-----------|-----------| ... |
+|1|     A1|     40|     20| ... |
+|1|     A2|     20|     50| ... |
+|2|     A1|     60|     10| ... |
+|2|    ...|    ...|    ...| ... |
 
 `Sheet2` contains additional information regarding each reagent. Column 0 contains a `String` of reagent names, such that each row contains information pertaining to a reagent listed in the headers from `Sheet1`. Column 2 should contain the well location of each reagent. The data does not have to be set to these specific columns as long as the `data_converter()` parameters are adjusted in `./protocols/utils/file_conversion.py`. An example of how `Sheet2` can look like is the following:
 
