@@ -46,8 +46,8 @@ def get_pipettes_from(PIPETTE, protocol, tiprack):
 	pipette = protocol.load_instrument(PIPETTE_API_NAME, PIPETTE_LOCATION, tip_racks=[tiprack])
     
     # Change clearance height for aspiration/dispensation to 5 mm above the bottom of the well
-	pipette.well_bottom_clearance.aspirate = 5
-	pipette.well_bottom_clearance.dispense = 5
+	pipette.well_bottom_clearance.aspirate = 2
+	pipette.well_bottom_clearance.dispense = 2
 	return pipette
 
 # Obtain the instruction set for a single deck slot and relevant variables
@@ -61,6 +61,7 @@ def filter_table_using(slots, deck_slot, INSTRUCT):
 def custom_transfer_protocol(pipette, volume, from_stock_location, to_destination):
 	pipette.aspirate(volume, from_stock_location)
 	pipette.dispense(volume, to_destination)
+	pipette.touch_tip(to_destination, speed = 15, radius = 0.75, v_offset = -3)
 	pipette.blow_out()
 
 def run(protocol: protocol_api.ProtocolContext):
