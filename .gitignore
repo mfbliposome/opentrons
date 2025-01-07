@@ -1,6 +1,8 @@
 # Ignore mac-housekeeping
 .DS_Store
 
+foo.xlsx
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
