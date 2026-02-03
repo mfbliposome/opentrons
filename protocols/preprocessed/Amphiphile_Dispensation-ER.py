@@ -78,6 +78,9 @@ def run(protocol: protocol_api.ProtocolContext):
         # Pick up a new tip for each stock solution and dispense when complete
 		num_dispensations = len(instructions)
 		for stock in solutions:
+			# Skip empty stock solutions to avoid unnecessary tip pickup
+			if instructions[stock].sum() == 0:
+				continue
 			p.pick_up_tip()
 			
             # Aspirate a stock solution and dispense into a destination well of interest
