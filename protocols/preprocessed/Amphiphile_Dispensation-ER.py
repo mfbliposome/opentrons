@@ -7,7 +7,7 @@ metadata = {
 	'apiLevel': '2.13',
 	'protocolName': 'Aphiphile_Dispensation', # protocolName should be same name as current file
 	'description': '''
-	This simple protocol transfers one stock solution to a series of destination wells for each stock solution in an excel workbook 
+	This simple protocol transfers stock solutions from one reservoir to a series of destination wells for each stock solution in an excel workbook 
 	''',
 	'author': 'ER'
 	}
@@ -28,6 +28,7 @@ def get_instructions_from(INSTRUCTIONS):
 def get_labware_from(LABWARE, protocol):
 	LAB_W = pd.read_csv(StringIO(LABWARE))
 	plates = []
+	tipracks = []
 	for i in range(len(LAB_W)):
 		LABWARE_ROLE = LAB_W['ROLE'].iloc[i]
 		if LABWARE_ROLE == "Destination_Wells":
@@ -35,19 +36,19 @@ def get_labware_from(LABWARE, protocol):
 		elif LABWARE_ROLE == "Stock_Solutions":
 			reservoir = protocol.load_labware(LAB_W['LABWARE_API_NAME'].iloc[i], int(LAB_W['LABWARE_DECK_SLOT'].iloc[i]))
 		elif LABWARE_ROLE == "Tips_Rack":
-			tiprack = protocol.load_labware(LAB_W['LABWARE_API_NAME'].iloc[i], int(LAB_W['LABWARE_DECK_SLOT'].iloc[i]))
-	return plates, reservoir, tiprack
+			tipracks.append(protocol.load_labware(LAB_W['LABWARE_API_NAME'].iloc[i], int(LAB_W['LABWARE_DECK_SLOT'].iloc[i])))
+	return plates, reservoir, tipracks
 
 # Load pipette and convert to labware object
-def get_pipettes_from(PIPETTE, protocol, tiprack):
+def get_pipettes_from(PIPETTE, protocol, tipracks):
 	PIPETTE_TYPE = pd.read_csv(StringIO(PIPETTE))
 	PIPETTE_LOCATION = PIPETTE_TYPE[PIPETTE_TYPE.columns[0]][0]
 	PIPETTE_API_NAME = PIPETTE_TYPE[PIPETTE_TYPE.columns[1]][0]
-	pipette = protocol.load_instrument(PIPETTE_API_NAME, PIPETTE_LOCATION, tip_racks=[tiprack])
+	pipette = protocol.load_instrument(PIPETTE_API_NAME, PIPETTE_LOCATION, tip_racks = tipracks)
     
-    # Change clearance height for aspiration/dispensation to 5 mm above the bottom of the well
-	pipette.well_bottom_clearance.aspirate = 2
-	pipette.well_bottom_clearance.dispense = 2
+    # Change clearance height for aspiration/dispensation to 3 mm above the bottom of the well
+	pipette.well_bottom_clearance.aspirate = 3
+	pipette.well_bottom_clearance.dispense = 3
 	return pipette
 
 # Obtain the instruction set for a single deck slot and relevant variables
@@ -67,8 +68,8 @@ def custom_transfer_protocol(pipette, volume, from_stock_location, to_destinatio
 def run(protocol: protocol_api.ProtocolContext):
 	# Obtain protocol information variables
 	INSTRUCT, slots = get_instructions_from(INSTRUCTIONS)
-	plates, reservoir, tiprack = get_labware_from(LABWARE, protocol)
-	p = get_pipettes_from(PIPETTE, protocol, tiprack)
+	plates, reservoir, tipracks = get_labware_from(LABWARE, protocol)
+	p = get_pipettes_from(PIPETTE, protocol, tipracks)
 	
     # Core protocol: Filter instruction table for plate number of interest before transfer
 	for deck_slot in range(len(slots)):
@@ -84,7 +85,7 @@ def run(protocol: protocol_api.ProtocolContext):
 				# Set up variables
 				volume = instructions[stock].iloc[i]
 				well = destinations[i]
-				from_stock_location = reservoir[stock]# plate[deck_slot][stock]
+				from_stock_location = reservoir[stock]   # plate[deck_slot][stock]
 				to_destination = plates[deck_slot][well]
 				
                 # Skip transfer call if there is no volume to be transfered
