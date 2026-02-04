@@ -21,26 +21,40 @@ PIPETTE = """"""
 def get_instructions_from(INSTRUCTIONS):
 	INSTRUCT = pd.read_csv(StringIO(INSTRUCTIONS))
 	DECK_SLOTS = INSTRUCT[INSTRUCT.columns[0]] # The first column has deck slot that indicate where the destination plates are located in the OT-2  
-	slots = DECK_SLOTS.unique() # Get the slots numbers being used
+	slots = sorted(DECK_SLOTS.unique()) # Get the slots numbers being used
 	return INSTRUCT, slots
 
 # Load labware for the experiment
 def get_labware_from(LABWARE, protocol):
 	LAB_W = pd.read_csv(StringIO(LABWARE))
-	plates = []
-	reservoirs = []
+	plates = {}
+	reservoirs = {}
 	tipracks = []
     
 	for i in range(len(LAB_W)):
 		LABWARE_ROLE = LAB_W['ROLE'].iloc[i]
+		API_NAME = LAB_W['LABWARE_API_NAME'].iloc[i]
+		SLOT = int(LAB_W['LABWARE_DECK_SLOT'].iloc[i])
 		if LABWARE_ROLE == "Destination_Wells":
-			plates.append(protocol.load_labware(LAB_W['LABWARE_API_NAME'].iloc[i], int(LAB_W['LABWARE_DECK_SLOT'].iloc[i])))
+			plates[SLOT] = protocol.load_labware(API_NAME, SLOT]
 		elif LABWARE_ROLE == "Stock_Solutions":
-			reservoirs.append(protocol.load_labware(LAB_W['LABWARE_API_NAME'].iloc[i], int(LAB_W['LABWARE_DECK_SLOT'].iloc[i])))
+			reservoirs[SLOT] = protocol.load_labware(API_NAME, SLOT]
 		elif LABWARE_ROLE == "Tips_Rack":
-			tipracks.append(protocol.load_labware(LAB_W['LABWARE_API_NAME'].iloc[i], int(LAB_W['LABWARE_DECK_SLOT'].iloc[i])))
+			tipracks.append(protocol.load_labware(API_NAME, SLOT]
 	return plates, reservoirs, tipracks
 
+												  
+# Build the resevoir map												  
+def build_res_map(LABWARE):
+	LAB_W = pd.read_csv(StringIO(LABWARE))
+	res_map = {}
+	res_count = 0
+	for i in range(len(LAB_W)):
+		if LAB_W['ROLE'].iloc[i] == "Stock_Solutions":
+			slot = int(LAB_W['LABWARE_DECK_SLOT'].iloc[i])
+			res_map[f"RES{res_count}"] = slot
+			res_count += 1
+	return res_map
 
 # Load pipette and convert to labware object
 def get_pipettes_from(PIPETTE, protocol, tipracks):
@@ -49,7 +63,7 @@ def get_pipettes_from(PIPETTE, protocol, tipracks):
 	PIPETTE_API_NAME = PIPETTE_TYPE[PIPETTE_TYPE.columns[1]][0]
 	pipette = protocol.load_instrument(PIPETTE_API_NAME, PIPETTE_LOCATION, tip_racks=tipracks)
     
-    # Change clearance height for aspiration/dispensation to 5 mm above the bottom of the well
+    # Change clearance height for aspiration/dispensation to 3 mm above the bottom of the well
 	pipette.well_bottom_clearance.aspirate = 3
 	pipette.well_bottom_clearance.dispense = 3
 	
@@ -60,8 +74,8 @@ def get_pipettes_from(PIPETTE, protocol, tipracks):
 	return pipette
 
 # Obtain the instruction set for a single deck slot and relevant variables
-def filter_table_using(slots, deck_slot, INSTRUCT):
-	INST = INSTRUCT[INSTRUCT[INSTRUCT.columns[0]] == slots[deck_slot]].reset_index().drop('index', axis=1)
+def filter_table_using(deck_slot, INSTRUCT):
+	INST = INSTRUCT[INSTRUCT[INSTRUCT.columns[0]] == deck_slot].reset_index(drop=True)
 	DESTINATIONS = list(INST[INST.columns[1]])                          # destination wells of the regeant
 	SOLUTIONS = list(INST.columns[2:])                                  # locations of the stock solutions for dispensation
 	return INST, DESTINATIONS, SOLUTIONS
@@ -78,17 +92,18 @@ def run(protocol: protocol_api.ProtocolContext):
 	INSTRUCT, slots = get_instructions_from(INSTRUCTIONS)
 	plates, reservoirs, tipracks = get_labware_from(LABWARE, protocol)
 	p = get_pipettes_from(PIPETTE, protocol, tipracks)
+	res_map = build_res_map(LABWARE)
 	
     # Core protocol: Filter instruction table for plate number of interest before transfer
-	for deck_slot in range(len(slots)):
-		instructions, destinations, solutions = filter_table_using(slots, deck_slot, INSTRUCT)
+	for deck_slot in slots:
+		instructions, destinations, solutions = filter_table_using(deck_slot, INSTRUCT)
 		
         # Pick up a new tip for each stock solution and dispense when complete
 		num_dispensations = len(instructions)
 		for stock in solutions:
-			res_idx, res_well = stock.split(":")
-			res_idx = int(res_idx.replace("RES", ""))
-			reservoir = reservoirs[res_idx]
+			res_label, res_well = stock.split(":")
+			res_slot = res_map[res_label]
+			reservoir = reservoirs[res_slot]
 			if instructions[stock].sum() == 0:
 			    continue
 			
@@ -109,3 +124,4 @@ def run(protocol: protocol_api.ProtocolContext):
 				custom_transfer_protocol(p, volume, from_stock_location, to_destination)
 				
 			p.drop_tip()
+
