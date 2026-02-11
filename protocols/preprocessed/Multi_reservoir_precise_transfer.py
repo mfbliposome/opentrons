@@ -36,11 +36,11 @@ def get_labware_from(LABWARE, protocol):
 		API_NAME = LAB_W['LABWARE_API_NAME'].iloc[i]
 		SLOT = int(LAB_W['LABWARE_DECK_SLOT'].iloc[i])
 		if LABWARE_ROLE == "Destination_Wells":
-			plates[SLOT] = protocol.load_labware(API_NAME, SLOT]
+			plates[SLOT] = protocol.load_labware(API_NAME, SLOT)
 		elif LABWARE_ROLE == "Stock_Solutions":
-			reservoirs[SLOT] = protocol.load_labware(API_NAME, SLOT]
+			reservoirs[SLOT] = protocol.load_labware(API_NAME, SLOT)
 		elif LABWARE_ROLE == "Tips_Rack":
-			tipracks.append(protocol.load_labware(API_NAME, SLOT]
+			tipracks.append(protocol.load_labware(API_NAME, SLOT)
 	return plates, reservoirs, tipracks
 
 												  
@@ -124,4 +124,5 @@ def run(protocol: protocol_api.ProtocolContext):
 				custom_transfer_protocol(p, volume, from_stock_location, to_destination)
 				
 			p.drop_tip()
+
 
