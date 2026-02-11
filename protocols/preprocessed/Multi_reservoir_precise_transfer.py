@@ -40,7 +40,7 @@ def get_labware_from(LABWARE, protocol):
 		elif LABWARE_ROLE == "Stock_Solutions":
 			reservoirs[SLOT] = protocol.load_labware(API_NAME, SLOT)
 		elif LABWARE_ROLE == "Tips_Rack":
-			tipracks.append(protocol.load_labware(API_NAME, SLOT)
+			tipracks.append(protocol.load_labware(API_NAME, SLOT))
 	return plates, reservoirs, tipracks
 
 												  
@@ -124,5 +124,6 @@ def run(protocol: protocol_api.ProtocolContext):
 				custom_transfer_protocol(p, volume, from_stock_location, to_destination)
 				
 			p.drop_tip()
+
 
 
