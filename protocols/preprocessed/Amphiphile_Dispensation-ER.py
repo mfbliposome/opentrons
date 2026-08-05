@@ -20,7 +20,7 @@ PIPETTE = """"""
 # Load instructions from excel workbook
 def get_instructions_from(INSTRUCTIONS):
 	INSTRUCT = pd.read_csv(StringIO(INSTRUCTIONS))
-	SLOTS = INSTRUCT['LABWARE_DECK_SLOT'].unique() # The first column has deck slot that indicate where the destination plates are located in the OT-2  
+	slots = INSTRUCT['LABWARE_DECK_SLOT'].unique() # The first column has deck slot that indicate where the destination plates are located in the OT-2  
 	#slots = DECK_SLOTS.unique() # Get the slots numbers being used
 	return INSTRUCT, slots
 
@@ -57,7 +57,7 @@ def filter_table_using(slots, deck_slot, INSTRUCT):
 	all_records = INSTRUCT.to_dict(orient='records')
 	INST = [row for row in all_records if int(row['LABWARE_DECK_SLOT']) == int(target_slot)]
 	DESTINATIONS = [row['DESTINATION_WELL'] for row in INST]                        # destination wells of the regeant
-	SOLUTIONS = list(INSTRUST.columns[2:])                                  # locations of the stock solutions for dispensation
+	SOLUTIONS = list(INSTRUCT.columns[2:])                                  # locations of the stock solutions for dispensation
 	return INST, DESTINATIONS, SOLUTIONS
 
 # A simple aspirate, dispense, and blow out protocol
@@ -80,7 +80,7 @@ def run(protocol: protocol_api.ProtocolContext):
         # Pick up a new tip for each stock solution and dispense when complete
 		num_dispensations = len(instructions)
 		for stock in solutions:
-			total_volume = sum(float(row[stock] for row in instructions)
+			total_volume = sum(float(row[stock]) for row in instructions)
 			# Skip empty stock solutions to avoid unnecessary tip pickup
 			if total_volume == 0:
 				continue
