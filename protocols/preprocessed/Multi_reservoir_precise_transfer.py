@@ -20,8 +20,8 @@ PIPETTE = """"""
 # Load instructions from excel workbook
 def get_instructions_from(INSTRUCTIONS):
 	INSTRUCT = pd.read_csv(StringIO(INSTRUCTIONS))
-	DECK_SLOTS = INSTRUCT[INSTRUCT.columns[0]] # The first column has deck slot that indicate where the destination plates are located in the OT-2  
-	slots = sorted(DECK_SLOTS.unique()) # Get the slots numbers being used
+	#DECK_SLOTS = INSTRUCT[INSTRUCT.columns[0]] # The first column has deck slot that indicate where the destination plates are located in the OT-2  
+	slots = sorted([int(x) for x in INSTRUCT['LABWARE_DECK_SLOT'].unique()]) # Get the slots numbers being used
 	return INSTRUCT, slots
 
 # Load labware for the experiment
@@ -75,9 +75,10 @@ def get_pipettes_from(PIPETTE, protocol, tipracks):
 
 # Obtain the instruction set for a single deck slot and relevant variables
 def filter_table_using(deck_slot, INSTRUCT):
-	INST = INSTRUCT[INSTRUCT[INSTRUCT.columns[0]] == deck_slot].reset_index(drop=True)
-	DESTINATIONS = list(INST[INST.columns[1]])                          # destination wells of the regeant
-	SOLUTIONS = list(INST.columns[2:])                                  # locations of the stock solutions for dispensation
+	all_records = INSTRUCT.to_dict(orient='records')
+	INST = [row for row in all_records if int(row['LABWARE_DECK_SLOT']) == int(deck_slot)]
+	DESTINATIONS = [row['DESTINATION_WELL'] for row in INST]                          # destination wells of the regeant
+	SOLUTIONS = list(INSTRUCT.columns[2:])                                  # locations of the stock solutions for dispensation
 	return INST, DESTINATIONS, SOLUTIONS
 
 # A simple aspirate, dispense, and blow out protocol
@@ -96,15 +97,23 @@ def run(protocol: protocol_api.ProtocolContext):
 	
     # Core protocol: Filter instruction table for plate number of interest before transfer
 	for deck_slot in slots:
+		if desk_slot not in plates:
+			continue
 		instructions, destinations, solutions = filter_table_using(deck_slot, INSTRUCT)
 		
         # Pick up a new tip for each stock solution and dispense when complete
 		num_dispensations = len(instructions)
 		for stock in solutions:
-			res_label, res_well = stock.split(":")
-			res_slot = res_map[res_label]
+			if ":" in stock:
+				res_label, res_well = stock.split(":")
+			else:
+				res_label, res_well = "RES0", stock
+			if res_label not in res_map:
+				continue
+			res_slot =  res_map[res_label]
 			reservoir = reservoirs[res_slot]
-			if instructions[stock].sum() == 0:
+			total_volume = sum(float(row[slot]) for row in instructions)
+			if total_volume == 0:
 			    continue
 			
 			p.pick_up_tip()
@@ -112,9 +121,9 @@ def run(protocol: protocol_api.ProtocolContext):
             # Aspirate a stock solution and dispense into a destination well of interest
 			for i in range(num_dispensations):
 				# Set up variables
-				volume = instructions[stock].iloc[i]
+				volume = float(instructions[i][stock])
 				well = destinations[i]
-				from_stock_location = reservoir[res_well]# plate[deck_slot][stock]
+				from_stock_location = reservoir[res_well]           # plate[deck_slot][stock]
 				to_destination = plates[deck_slot][well]
 				
                 # Skip transfer call if there is no volume to be transfered
