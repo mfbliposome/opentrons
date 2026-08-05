@@ -97,7 +97,7 @@ def run(protocol: protocol_api.ProtocolContext):
 	
     # Core protocol: Filter instruction table for plate number of interest before transfer
 	for deck_slot in slots:
-		if desk_slot not in plates:
+		if deck_slot not in plates:
 			continue
 		instructions, destinations, solutions = filter_table_using(deck_slot, INSTRUCT)
 		
@@ -112,7 +112,7 @@ def run(protocol: protocol_api.ProtocolContext):
 				continue
 			res_slot =  res_map[res_label]
 			reservoir = reservoirs[res_slot]
-			total_volume = sum(float(row[slot]) for row in instructions)
+			total_volume = sum(float(row[stock]) for row in instructions)
 			if total_volume == 0:
 			    continue
 			
