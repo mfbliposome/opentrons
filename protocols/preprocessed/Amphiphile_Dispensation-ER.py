@@ -55,7 +55,7 @@ def get_pipettes_from(PIPETTE, protocol, tipracks):
 def filter_table_using(slots, deck_slot, INSTRUCT):
 	target_slot = slots[deck_slot]
 	all_records = INSTRUCT.to_dict(orient='records')
-	INST = [row for row in all records if int(row['LABWARE_DECK_SLOT']) == int(target_slot)]
+	INST = [row for row in all_records if int(row['LABWARE_DECK_SLOT']) == int(target_slot)]
 	DESTINATIONS = [row['DESTINATION_WELL'] for row in INST]                        # destination wells of the regeant
 	SOLUTIONS = list(INSTRUST.columns[2:])                                  # locations of the stock solutions for dispensation
 	return INST, DESTINATIONS, SOLUTIONS
