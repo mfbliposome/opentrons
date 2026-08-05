@@ -5,7 +5,7 @@ from opentrons import protocol_api
 
 metadata = {
 	'apiLevel': '2.13',
-	'protocolName': 'Aphiphile_Dispensation', # protocolName should be same name as current file
+	'protocolName': 'Amphiphile_Dispensation', # protocolName should be same name as current file
 	'description': '''
 	This simple protocol transfers stock solutions from one reservoir to a series of destination wells for each stock solution in an excel workbook 
 	''',
